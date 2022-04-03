@@ -2,7 +2,8 @@ function love.load()
   Object = require "classic"
   require "paddles"
   require "ball"
-  require "score"
+  require "score1"
+  require "score2"
   window_width = love.graphics.getWidth()
   window_height = love.graphics.getHeight()
   paddlewidth = 20
@@ -16,8 +17,8 @@ function love.load()
   p1 = Paddle(p1x, p1y, paddlewidth, paddleheight, 'w', 's')
   p2 = Paddle(p2x, p2y, paddlewidth, paddleheight, 'i', 'k')
   b = Ball(window_width/2, window_height/2, bwidth, bheight, paddlewidth, paddleheight)
-  s1 = Score(50, 50, 'l')
-  s2 = Score(window_width - 100, 50, 'r')
+  s1 = Score1(50, 50, 0)
+  s2 = Score2(window_width - 100, 50, 0)
 end
 
 function love.draw()
@@ -33,7 +34,7 @@ end
 function love.update(dt)
   p1:update(dt,b.y)
   p2:update(dt, b.y)
-  s1:update(b.x, b.y, b.width)
-  s2:update(b.x, b.y, b.width)
+  s1:update(b.x)
+  s2:update(b.x, b.width)
   b:update(dt, p1.x, p1.y, p2.x, p2.y)
 end
