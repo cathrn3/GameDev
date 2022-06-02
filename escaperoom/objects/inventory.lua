@@ -14,8 +14,10 @@ end
 
 function Inventory:draw(player)
   if self.on then
+    -- draw background
     love.graphics.setColor(1,1,1,.7)
     love.graphics.rectangle('fill', 0, 0, self.x, self.y)
+    -- draw each item
     for i = 1, #self.items do
       if self.items[i] ~= nil then
         love.graphics.setColor(1,1,1,1)
@@ -23,21 +25,15 @@ function Inventory:draw(player)
         love.graphics.draw(self.items[i], self.item_width * (i - 1), 0, 0, self.item_width/width, self.y/height)
       end
     end
+    -- draw dividing lines
     love.graphics.setColor(0,0,0)
     love.graphics.setLineWidth(2)
     love.graphics.rectangle("line", 0, 0, self.x, self.y)
     for i = 1, self.total_items + 1 do 
       love.graphics.line(self.item_width * (i - 1), 0, self.item_width * (i - 1), self.y)
     end
-    
-    for i = 1, self.total_items do
-      if near_object(mouse_x, mouse_y, 0, 0, self.item_width * (i - 1), 0, self.item_width, self.y, 0, 0) and self.items[i] ~= nil then
-        love.mouse.setCursor(hand_cursor)
-        break
-      else
-        love.mouse.setCursor(arrow_cursor)
-      end
-    end
+  
+    -- display clicked item above player
     if self.clicked_index ~= nil then
       cur = self.items[self.clicked_index]
       if cur ~= nil then  
@@ -51,16 +47,49 @@ function Inventory:draw(player)
 end
 
 function Inventory:update(str, item)
-  -- note: item should be a drawable
-  mouse_x, mouse_y = love.mouse.getPosition()
+  local mouse_x, mouse_y = love.mouse.getPosition()
   for i = 1, self.total_items do
-    -- add to first empty slot
-    if str == "add" and self.items[i] == nil then
-      self.items[i] = item
-      return
-    elseif str == "remove" and self.items[i] == item then
-      self.items[i] = nil
-      return 
+    if near_object(mouse_x, mouse_y, 0, 0, self.item_width * (i - 1), 0, self.item_width, self.y, 0, 0) and self.items[i] ~= nil then
+      love.mouse.setCursor(hand_cursor)
+      break
+    else
+      love.mouse.setCursor(arrow_cursor)
     end
   end
+end
+
+function Inventory:add(item)
+  -- item should be a drawable, add to first empty slot
+  for i = 1, self.total_items do
+    if self.items[i] == nil then
+      self.items[i] = item
+      return
+    end
+  end
+end
+
+function Inventory:remove(item)
+  for i = 1, self.total_items do
+    if self.items[i] == items then
+      self.items[i] = nil
+      return
+    end
+  end
+end
+  
+  
+function Inventory:mousereleased(x, y, button)
+  if button == 1 and inventory.on then
+    for i = 1, inventory.total_items do
+      if near_object(x, y, 0, 0, inventory.item_width * (i - 1), 0, inventory.item_width, inventory.y, 0, 0) then
+        -- select item
+        if inventory.items[i] ~= nil and (inventory.clicked_index == nil or inventory.clicked_index ~= i) then
+          inventory.clicked_index = i
+        -- unselect previously selected item
+        elseif inventory.clicked_index == i then
+          inventory.clicked_index = nil
+        end
+      end
+    end
+  end  
 end

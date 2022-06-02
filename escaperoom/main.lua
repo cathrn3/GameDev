@@ -4,16 +4,16 @@ Timer = require "hump.timer"
 local menu = require "states.menu"
 
 function love.load()
-  require "objects.moveable"
   require "objects.inventory"
   require "objects.dial"
   require "objects.lock"
+  require "objects.moveable"
   Gamestate.registerEvents()
   Gamestate.switch(menu)
   love.window.setFullscreen(true, "desktop")
   window_x, window_y = love.graphics.getDimensions()
-  player = Moveable(window_x/2 - 20, window_y/2 - 35, 40, 70, 200, {1,1,1})
-  clicked = false
+  hand_cursor = love.mouse.getSystemCursor("hand")
+  arrow_cursor = love.mouse.getSystemCursor("arrow")
 end
 
 function near_object(x1, y1, w1, h1, x2, y2, w2, h2, x_pad, y_pad)
