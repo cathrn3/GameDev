@@ -1,6 +1,7 @@
 Inventory = Object:extend(Object)
 
 function Inventory:new()
+  -- in the future: items are expected to be drawable objects
   self.items  = {}
   self.total_items = 10
   self.on = false
@@ -21,8 +22,7 @@ function Inventory:draw(player)
     for i = 1, #self.items do
       if self.items[i] ~= nil then
         love.graphics.setColor(1,1,1,1)
-        width, height = self.items[i]:getWidth(), self.items[i]:getHeight()
-        love.graphics.draw(self.items[i], self.item_width * (i - 1), 0, 0, self.item_width/width, self.y/height)
+        self.items[i]:display(self.item_width * (i - 1), 0, self.item_width, self.y)
       end
     end
     -- draw dividing lines
@@ -33,27 +33,34 @@ function Inventory:draw(player)
       love.graphics.line(self.item_width * (i - 1), 0, self.item_width * (i - 1), self.y)
     end
   
-    -- display clicked item above player
+    -- display clicked item above player or interact 
     if self.clicked_index ~= nil then
-      cur = self.items[self.clicked_index]
-      if cur ~= nil then  
-        love.graphics.setColor(.8, .8, .8)
-        love.graphics.rectangle("line", self.item_width * (self.clicked_index - 1), 0, self.item_width, self.y)
+      love.graphics.setColor(.8, .8, .8)
+      love.graphics.rectangle("line", self.item_width * (self.clicked_index - 1), 0, self.item_width, self.y)
+      if self.items[self.clicked_index].interact then
+        love.graphics.setColor(1,1,1)
+        self.items[self.clicked_index]:inspect()
+      else
         love.graphics.setColor(1, 1, 1)
-        love.graphics.draw(cur, player.x + player.w/2 - 20, player.y - 45, 0, 40/cur:getWidth(), 40/cur:getHeight())
-      end
-    end
+        self.items[self.clicked_index]:display(player.x + player.w/2 - 20, player.y - 45, 40, 40)
+      end 
+    end    
   end
 end
 
-function Inventory:update(str, item)
-  local mouse_x, mouse_y = love.mouse.getPosition()
-  for i = 1, self.total_items do
-    if near_object(mouse_x, mouse_y, 0, 0, self.item_width * (i - 1), 0, self.item_width, self.y, 0, 0) and self.items[i] ~= nil then
-      love.mouse.setCursor(hand_cursor)
-      break
-    else
-      love.mouse.setCursor(arrow_cursor)
+function Inventory:update(mouse_x, mouse_y)
+  if self.on then
+    for i = 1, self.total_items do
+      if near_object(mouse_x, mouse_y, 0, 0, self.item_width * (i - 1), 0, self.item_width, self.y, 0, 0) and self.items[i] ~= nil then
+        love.mouse.setCursor(hand_cursor)
+        break
+      else
+        if self.clicked_index ~= nil and self.items[self.clicked_index].interact then
+          self.items[self.clicked_index]:cursor(mouse_x, mouse_y)
+        else
+          love.mouse.setCursor(arrow_cursor)
+        end
+      end
     end
   end
 end
@@ -78,18 +85,31 @@ function Inventory:remove(item)
 end
   
   
-function Inventory:mousereleased(x, y, button)
-  if button == 1 and inventory.on then
-    for i = 1, inventory.total_items do
-      if near_object(x, y, 0, 0, inventory.item_width * (i - 1), 0, inventory.item_width, inventory.y, 0, 0) then
+function Inventory:mousereleased(x, y, button, paused)
+  -- interact with inventory
+  if button == 1 and self.on then
+    for i = 1, self.total_items do
+      if near_object(x, y, 0, 0, self.item_width * (i - 1), 0, self.item_width, self.y, 0, 0) then
         -- select item
-        if inventory.items[i] ~= nil and (inventory.clicked_index == nil or inventory.clicked_index ~= i) then
-          inventory.clicked_index = i
+        if self.items[i] ~= nil and (self.clicked_index == nil or self.clicked_index ~= i) then
+          self.clicked_index = i
+          if self.items[self.clicked_index].interact then
+            paused = true
+          else 
+            paused = false
+          end
+          return paused
         -- unselect previously selected item
-        elseif inventory.clicked_index == i then
-          inventory.clicked_index = nil
+        elseif self.clicked_index == i then
+          self.clicked_index = nil
+          paused = false
+          return paused
         end
       end
     end
-  end  
+    if self.clicked_index ~= nil and self.items[self.clicked_index].interact then
+      self.items[self.clicked_index]:mousereleased(x, y, button)
+    end
+  end
+  return paused
 end

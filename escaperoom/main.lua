@@ -2,6 +2,12 @@ Gamestate = require "hump.gamestate"
 Object = require "objects.classic"
 Timer = require "hump.timer"
 local menu = require "states.menu"
+love.window.setMode(1536, 864,{resizable = true, highdpi = true, fullscreen = true}) -- Just to make the screen resizable, and this method works with HighDpi
+push = require "push"
+window_x, window_y = 1536, 864 --fixed game resolution
+cur_x, cur_y = love.window.getDesktopDimensions()
+push:setupScreen(window_x, window_y, cur_x, cur_y, {fullscreen = true})
+
 
 function love.load()
   require "objects.inventory"
@@ -10,8 +16,6 @@ function love.load()
   require "objects.moveable"
   Gamestate.registerEvents()
   Gamestate.switch(menu)
-  love.window.setFullscreen(true, "desktop")
-  window_x, window_y = love.graphics.getDimensions()
   hand_cursor = love.mouse.getSystemCursor("hand")
   arrow_cursor = love.mouse.getSystemCursor("arrow")
 end
@@ -25,8 +29,9 @@ function near_object(x1, y1, w1, h1, x2, y2, w2, h2, x_pad, y_pad)
   end
 end
 
+
 function love.keypressed(key)
   if key == "escape" then
     love.event.quit()
-  end 
+  end
 end

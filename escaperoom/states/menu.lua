@@ -6,7 +6,9 @@ function menu:enter()
 end
 
 function menu:draw()
+  push:start()
   love.graphics.print("Press Enter to continue", 10, 10)
+  push:finish()
 end
 
 function menu:update(dt)
