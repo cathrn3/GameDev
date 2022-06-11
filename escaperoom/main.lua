@@ -10,10 +10,6 @@ push:setupScreen(window_x, window_y, cur_x, cur_y, {fullscreen = true})
 
 
 function love.load()
-  require "objects.inventory"
-  require "objects.dial"
-  require "objects.lock"
-  require "objects.moveable"
   Gamestate.registerEvents()
   Gamestate.switch(menu)
   hand_cursor = love.mouse.getSystemCursor("hand")
@@ -22,6 +18,8 @@ end
 
 function near_object(x1, y1, w1, h1, x2, y2, w2, h2, x_pad, y_pad)
   -- checks if object one is close to object two, allowing for a x and y padding
+  x_pad = x_pad or 10
+  y_pad = y_pad or 10
   if x1 < x2 + w2 + x_pad and x1 + w1 > x2 - x_pad and y1 < y2 + h2 + y_pad and y1 + h1 > y2 - y_pad then
     return true
   else

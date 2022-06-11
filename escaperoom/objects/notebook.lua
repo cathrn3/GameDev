@@ -21,7 +21,11 @@ function Notebook:display(x, y, w, h)
   love.graphics.draw(self.pages[1], x, y, 0, w/self.pages[1]:getWidth(), h/self.pages[1]:getHeight())
 end
 
-function Notebook:inspect()
+function Notebook:int(x, y, w, h)
+  
+end
+
+function Notebook:insp()
   -- centered
   if self.current == 1 then
     love.graphics.draw(self.pages[self.current], window_x/2 - 200, window_y/2 - 200, 0, 400/self.pages[self.current]:getWidth(), 400/self.pages[self.current]:getHeight())

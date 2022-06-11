@@ -14,6 +14,7 @@ function Lock:draw()
   love.graphics.setColor(1,1,1)
   if self.open then
     love.mouse.setCursor(arrow_cursor)
+    -- TODO: improve this, lags after subsequent opens
     love.timer.sleep(1)
     love.graphics.draw(self.o_img, self.o_x - self.o_w/2, self.o_y - self.o_h/2, 0, self.o_w/self.o_img:getWidth(), self.o_h/self.o_img:getHeight())
   else 
