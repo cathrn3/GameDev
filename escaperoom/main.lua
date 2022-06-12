@@ -4,16 +4,23 @@ Timer = require "hump.timer"
 local menu = require "states.menu"
 love.window.setMode(1536, 864,{resizable = true, highdpi = true, fullscreen = true}) -- Just to make the screen resizable, and this method works with HighDpi
 push = require "push"
+
 window_x, window_y = 1536, 864 --fixed game resolution
 cur_x, cur_y = love.window.getDesktopDimensions()
 push:setupScreen(window_x, window_y, cur_x, cur_y, {fullscreen = true})
-
 
 function love.load()
   Gamestate.registerEvents()
   Gamestate.switch(menu)
   hand_cursor = love.mouse.getSystemCursor("hand")
   arrow_cursor = love.mouse.getSystemCursor("arrow")
+  
+  -- alphnum
+  alphnum = {}
+  for i = 0, 35 do
+    local new_image = love.graphics.newImage("resources/star_room/alphnum/" .. i .. ".png")
+    table.insert(alphnum, new_image)
+  end
 end
 
 function near_object(x1, y1, w1, h1, x2, y2, w2, h2, x_pad, y_pad)
